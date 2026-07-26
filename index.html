@@ -32,7 +32,7 @@
         <div class="text-center mb-6">
             <h1 class="text-xl font-extrabold text-blue-600 tracking-tight uppercase">Tra Cứu Căn Hộ</h1>
             <p class="text-xs text-gray-500 mt-1">Hỗ trợ tra cứu NOXH 2 (E2) - EcoHome Hòa Hiệp</p>
-            <p class="text-xs text-red-500 mt-1">VUI LÒNG ĐỐI CHIẾU LẠI KẾT QUẢ DỰA TRÊN VĂN BẢN GỐC</p>
+            <p class="text-xs text-red-500 mt-1">VUI LÒNG ĐỐI CHIẾU LẠI KẾT QUẢ VỚI VĂN BẢN GỐC</p>
         </div>
 
         <!-- Form Nhập Mã Căn Hộ -->
@@ -134,7 +134,7 @@
             if (clean.length === 3 && !isBackspace) {
                 formatted += '.';
             } else if (clean.length > 3) {
-                formatted += '.' + clean.substring(3, 7);
+                formatted += '.' + clean.substring(3, 12);
             }
 
             return formatted;
