@@ -165,6 +165,11 @@
                                     <span class="text-xs text-blue-100">Giá bán (gồm VAT):</span>
                                     <span class="font-extrabold text-yellow-300 text-base">${formatMoney(apartment.gia_ban_ki)} đ/m²</span>
                                 </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-blue-100">Giá căn hộ (gồm VAT):</span>
+                                    <span class="font-extrabold text-yellow-300 text-base">${formatMoney(apartment.gia_ban_ki * apartment.dien_tich_can_ho)} đ</span>
+                                </div>
+                                <hr>
                                 <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
                                     <span class="text-xs text-blue-100">Giá cho thuê (gồm VAT):</span>
                                     <span class="font-bold text-green-200 text-sm">${formatMoney(apartment.gia_thue)} đ/m²/tháng</span>
