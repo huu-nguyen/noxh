@@ -67,10 +67,31 @@
     <script>
 
         // Hỗ trợ người dùng bấm nút Enter trên bàn phím điện thoại để tìm luôn
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        const inputEl = document.getElementById('searchInput');
+        let isBackspace = false;
+        inputEl.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 handleSearch();
             }
+        });
+
+        // 1. Kiểm tra xem người dùng có bấm nút xóa (Backspace) không
+        inputEl.addEventListener('keydown', (e) => {
+            isBackspace = (e.key === 'Backspace');
+        });
+
+        inputEl.addEventListener('input', (e) => {
+            let cursorPosition = e.target.selectionStart;
+            let originalLength = e.target.value.length;
+
+            // Gọi hàm xử lý với trạng thái nút xóa
+            let formatted = formatInstantCode(e.target.value, isBackspace);
+
+            e.target.value = formatted;
+
+            // Giữ vị trí con trỏ chuột chính xác
+            let delta = formatted.length - originalLength;
+            e.target.setSelectionRange(cursorPosition + delta, cursorPosition + delta);
         });
 
         function formatMoney(amount) {
@@ -79,6 +100,39 @@
                 return "N/A";
             }
             return amount.toLocaleString('vi-VN');
+        }
+
+        function getImageUrl(kyHieuCanHo) {
+            const donNguyen = kyHieuCanHo.substring(kyHieuCanHo.length - 1); // Lấy ký tự cuối cùng của ký hiệu căn hộ
+            // Tạo URL hình ảnh dựa trên ký hiệu căn hộ
+            return `images/${donNguyen}.jpg`;
+        }
+
+        function formatInstantCode(value) {
+            // Loại bỏ các ký tự đặc biệt để lấy chuỗi thô
+            let clean = value.replace(/[-.]/g, '');
+            let formatted = '';
+
+            // Cú pháp gõ: E2-D.0302
+            if (clean.length > 0) {
+                formatted += clean.substring(0, 2);
+            }
+            
+            // Nếu gõ đủ 2 ký tự (E2) và KHÔNG phải đang nhấn xóa -> thêm luôn dấu "-"
+            if (clean.length === 2 && !isBackspace) {
+                formatted += '-';
+            } else if (clean.length > 2) {
+                formatted += '-' + clean.substring(2, 3);
+            }
+
+            // Nếu gõ đủ 3 ký tự thô (E2D) và KHÔNG phải đang nhấn xóa -> thêm luôn dấu "."
+            if (clean.length === 3 && !isBackspace) {
+                formatted += '.';
+            } else if (clean.length > 3) {
+                formatted += '.' + clean.substring(3, 7);
+            }
+
+            return formatted;
         }
 
         async function handleSearch() {
@@ -176,6 +230,15 @@
                                     <span class="text-xs text-blue-100">Giá cho thuê (gồm VAT):</span>
                                     <span class="font-bold text-green-200 text-sm">${formatMoney(apartment.gia_thue)} đ/m²/tháng</span>
                                 </div>
+                                <hr>
+                                <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
+                                    <span class="text-xs text-blue-100">Vị trí căn hộ:</span>
+                                </div>
+                                <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
+                                    <img src="${getImageUrl(apartment.ky_hieu_can_ho)}" class="inline-block" alt="Vị trí">
+                                </div>
+                                
+                                <hr>
                             </div>
                         </div>
                     </div>
