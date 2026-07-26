@@ -63,6 +63,10 @@
     <div class="text-center py-4 text-[10px] text-gray-400 font-medium">
         &copy; 2026
     </div>
+    <!-- <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
+        <span class="text-xs text-blue-100">Giá cho thuê (gồm VAT):</span>
+        <span class="font-bold text-green-200 text-sm">${formatMoney(apartment.gia_thue)} đ/m²/tháng</span>
+    </div> -->
 
     <!-- Xử lý Logic Javascript -->
     <script>
@@ -232,25 +236,21 @@
                                 </div>
                                 <hr>
                                 <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
-                                    <span class="text-xs text-blue-100">Giá cho thuê (gồm VAT):</span>
-                                    <span class="font-bold text-green-200 text-sm">${formatMoney(apartment.gia_thue)} đ/m²/tháng</span>
-                                </div>
-                                <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
                                     <span class="text-xs text-blue-100">Vị trí căn hộ:</span>
                                 </div>
                                 <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
                                     <img src="${getImageUrl(apartment.ky_hieu_can_ho)}" class="inline-block" alt="Vị trí">
                                 </div>
-                                
-                                <hr>
                             </div>
                         </div>
-                        <hr>
                         <div class="">
                             <span class="text-xs text-red-200">
                                 ⚠️ Thông tin tham khảo: Dữ liệu này được trích xuất từ file của chủ đầu tư nên không tránh khỏi sai sót.
                                 Anh/chị vui lòng đối chiếu trên văn bản gốc được chủ đầu tư công bố.
                             </span>
+                        </div>
+                        <div>
+                            <a href="https://drive.google.com/file/d/1NQzxgDTYGVBDcxJ9yi5KkKbUboD7x2uv/view" target="_blank" class="text-xs text-blue-200 hover:text-blue-100">📄 Xem chi tiết văn bản gốc tại đây</a>
                         </div>
                     </div>
                 `;
