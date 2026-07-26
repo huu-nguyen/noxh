@@ -30,8 +30,8 @@
         
         <!-- Tiêu đề tiêu chuẩn Mobile -->
         <div class="text-center mb-6">
-            <h1 class="text-xl font-extrabold text-blue-600 tracking-tight uppercase">Tra Cứu Giá Căn Hộ</h1>
-            <p class="text-xs text-gray-500 mt-1">Dự án Nhà ở xã hội NOXH 2 (E2) - Hòa Hiệp 4</p>
+            <h1 class="text-xl font-extrabold text-blue-600 tracking-tight uppercase">Tra Cứu Căn Hộ</h1>
+            <p class="text-xs text-gray-500 mt-1">Hỗ trợ tra cứu NOXH 2 (E2) - EcoHome Hòa Hiệp</p>
         </div>
 
         <!-- Form Nhập Mã Căn Hộ -->
@@ -60,7 +60,7 @@
 
     <!-- Bản quyền / Footer chân trang -->
     <div class="text-center py-4 text-[10px] text-gray-400 font-medium">
-        &copy; Bản quyền thuộc NVH
+        &copy; 2026
     </div>
 
     <!-- Xử lý Logic Javascript -->
@@ -213,6 +213,10 @@
                                 <p class="text-[11px] text-blue-200 font-medium">Hệ Số Điều Chỉnh (Ki)</p>
                                 <p class="font-bold text-base">${apartment.he_so_ki}</p>
                             </div>
+                            <div>
+                                <p class="text-[11px] text-blue-200 font-medium">Số thứ tự</p>
+                                <p class="font-bold text-base">${apartment.stt}</p>
+                            </div>
                             <div class="col-span-2 border-t border-white/10 my-0.5"></div>
                             <div class="col-span-2 bg-white/10 p-3 rounded-xl space-y-1.5 mt-1">
                                 <div class="flex justify-between items-center">
@@ -220,7 +224,7 @@
                                     <span class="font-extrabold text-yellow-300 text-base">${formatMoney(apartment.gia_ban_ki)} đ/m²</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs text-blue-100">Giá căn hộ (chưa bao gồm 2% phí bảo trì):</span>
+                                    <span class="text-xs text-blue-100">Giá căn hộ dự kiến (chưa bao gồm 2% phí bảo trì):</span>
                                 </div>
                                 <div class="flex justify-end items-center">
                                     <span class="font-extrabold text-orange-400 text-base">${formatMoney(apartment.gia_ban_ki * apartment.dien_tich_can_ho)} đ</span>    
@@ -230,7 +234,6 @@
                                     <span class="text-xs text-blue-100">Giá cho thuê (gồm VAT):</span>
                                     <span class="font-bold text-green-200 text-sm">${formatMoney(apartment.gia_thue)} đ/m²/tháng</span>
                                 </div>
-                                <hr>
                                 <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
                                     <span class="text-xs text-blue-100">Vị trí căn hộ:</span>
                                 </div>
@@ -240,6 +243,13 @@
                                 
                                 <hr>
                             </div>
+                        </div>
+                        <hr>
+                        <div class="">
+                            <span class="text-xs text-red-200">
+                                ⚠️ Thông tin tham khảo: Dữ liệu này được trích xuất từ file của chủ đầu tư nên không tránh khỏi sai sót.
+                                Anh/chị vui lòng đối chiếu trên văn bản gốc được chủ đầu tư công bố.
+                            </span>
                         </div>
                     </div>
                 `;
