@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tra Cứu Căn Hộ NOXH</title>
+    <!-- Sử dụng Tailwind CSS để tối ưu giao diện mượt mà -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <style>
+        /* Hiệu ứng xoay cho icon loading */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Nội dung chính -->
+    <div class="w-full max-w-md mx-auto p-4 pt-8">
+        
+        <!-- Tiêu đề tiêu chuẩn Mobile -->
+        <div class="text-center mb-6">
+            <h1 class="text-xl font-extrabold text-blue-600 tracking-tight uppercase">Tra Cứu Giá Căn Hộ</h1>
+            <p class="text-xs text-gray-500 mt-1">Dự án Nhà ở xã hội NOXH 1 (E1) - Hòa Hiệp 4</p>
+        </div>
+
+        <!-- Form Nhập Mã Căn Hộ -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-5">
+            <div class="mb-4">
+                <label for="searchInput" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Nhập mã căn hộ</label>
+                <!-- Thuộc tính autocapitalize tự động viết hoa chữ cái đầu khi gõ điện thoại -->
+                <input type="text" id="searchInput" placeholder="Ví dụ: E1-A.0201" autocomplete="off" autocapitalize="characters"
+                       class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-mono font-bold text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all placeholder:font-sans placeholder:text-sm placeholder:font-normal">
+            </div>
+
+            <!-- Nút bấm to, dễ chạm trên Mobile -->
+            <button id="searchBtn" onclick="handleSearch()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 active:scale-[0.98]">
+                <span id="btnText">Tra cứu ngay</span>
+                <div id="btnSpinner" class="spinner hidden"></div>
+            </button>
+        </div>
+
+        <!-- Vùng hiển thị Kết quả / Thông báo -->
+        <div id="resultContainer" class="hidden transition-all duration-300">
+            <!-- Dữ liệu căn hộ sẽ được JS bơm vào đây -->
+        </div>
+
+    </div>
+
+    <!-- Bản quyền / Footer chân trang -->
+    <div class="text-center py-4 text-[10px] text-gray-400 font-medium">
+        &copy; Bản quyền thuộc NVH
+    </div>
+
+    <!-- Xử lý Logic Javascript -->
+    <script>
+
+        // Hỗ trợ người dùng bấm nút Enter trên bàn phím điện thoại để tìm luôn
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        function formatMoney(amount) {
+            return amount.toLocaleString('vi-VN');
+        }
+
+        async function handleSearch() {
+            const input = document.getElementById('searchInput');
+            const btn = document.getElementById('searchBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const resultContainer = document.getElementById('resultContainer');
+
+            // Định dạng chuỗi nhập vào: Viết hoa, xóa khoảng trắng thừa [1]
+            const query = input.value.trim().toUpperCase();
+
+            if (!query) {
+                alert("Vui lòng nhập mã căn hộ cần tìm!");
+                return;
+            }
+
+            // ── KHÓA NÚT & HIỂN THỊ LOADING (Tránh click spam nhiều lần) ──
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            btnText.innerText = "Đang tra cứu...";
+            btnSpinner.classList.remove('hidden');
+            
+            // Ẩn vùng kết quả cũ khi đang tìm kiếm
+            resultContainer.classList.add('hidden');
+
+
+            // fetch dữ liệu
+            const result = await fetch(`https://script.google.com/macros/s/AKfycbyB-FncIfhk-hfgCQ_6VlHPEsS68PPko9DFSzfjiQRExp8T73g1ZJ58nhmxRkvOwMWeXA/exec?ma_can_ho=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Nếu dữ liệu từ API trả về thành công, sử dụng dữ liệu đó
+                    if (data) {
+                        return data;
+                    } else {
+                        // Nếu không có dữ liệu từ API, fallback về dữ liệu Dummy
+                        return {};
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi khi fetch dữ liệu:", error);
+                    // Nếu có lỗi fetch, fallback về dữ liệu Dummy
+                    return {};
+                });
+            
+            const apartment = result.data || {};
+            if (apartment) {
+                // Thiết kế Thẻ Kết Quả (Card) đầy đủ thông số như ảnh scan
+                resultContainer.innerHTML = `
+                    <div class="bg-gradient-to-br from-blue-600 to-blue-700 text-white p-5 rounded-2xl shadow-lg border border-blue-500">
+                        <div class="flex justify-between items-center border-b border-white/20 pb-3 mb-4">
+                            <div>
+                                <p class="text-[10px] uppercase font-bold tracking-widest text-blue-200">Mã Căn Hộ</p>
+                                <h2 class="text-2xl font-black font-mono mt-0.5">${apartment.ma_can_ho}</h2>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-bold bg-white/20 px-2.5 py-1 rounded-full">Tòa ${apartment.toa}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Lưới thông số kỹ thuật tối ưu 2 cột trên Mobile -->
+                        <div class="grid grid-cols-2 gap-y-3.5 gap-x-2 text-sm">
+                            <div>
+                                <p class="text-[11px] text-blue-200 font-medium">Tầng / Số Căn</p>
+                                <p class="font-bold text-base">Tầng ${apartment.tang} — Căn ${apartment.so_can}</p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] text-blue-200 font-medium">Đơn Nguyên / Ký Hiệu</p>
+                                <p class="font-bold text-base">ĐN ${apartment.don_nguyen} — ${apartment.ky_hieu_can_ho}</p>
+                            </div>
+                            <div class="col-span-2 border-t border-white/10 my-0.5"></div>
+                            <div>
+                                <p class="text-[11px] text-blue-200 font-medium">Diện Tích Căn Hộ</p>
+                                <p class="font-bold text-base">${apartment.dien_tich_can_ho} m²</p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] text-blue-200 font-medium">Hệ Số Điều Chỉnh (Ki)</p>
+                                <p class="font-bold text-base">${apartment.he_so_ki}</p>
+                            </div>
+                            <div class="col-span-2 border-t border-white/10 my-0.5"></div>
+                            <div class="col-span-2 bg-white/10 p-3 rounded-xl space-y-1.5 mt-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-blue-100">Giá bán (gồm VAT):</span>
+                                    <span class="font-extrabold text-yellow-300 text-base">${formatMoney(apartment.gia_ban_ki)} đ/m²</span>
+                                </div>
+                                <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
+                                    <span class="text-xs text-blue-100">Giá cho thuê (gồm VAT):</span>
+                                    <span class="font-bold text-green-200 text-sm">${formatMoney(apartment.gia_thue)} đ/m²/tháng</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Trả về thông báo không tìm thấy định dạng Mobile thân thiện
+                resultContainer.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center text-sm font-medium">
+                        ❌ Không tìm thấy mã căn hộ <span class="font-mono font-bold">${query}</span> trong hệ thống. Vui lòng kiểm tra lại!
+                    </div>
+                `;
+            }
+
+            // ── MỞ KHÓA LẠI NÚT BẤM SAU KHI HOÀN THÀNH TRA CỨU ──
+            btn.disabled = false;
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            btnText.innerText = "Tra cứu ngay";
+            btnSpinner.classList.add('hidden');
+            
+            // Hiển thị mượt mà vùng kết quả
+            resultContainer.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
