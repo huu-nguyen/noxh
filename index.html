@@ -74,6 +74,10 @@
         });
 
         function formatMoney(amount) {
+            // check is number
+            if (isNaN(amount)) {
+                return "N/A";
+            }
             return amount.toLocaleString('vi-VN');
         }
 
@@ -121,7 +125,8 @@
                 });
             
             const apartment = result.data || {};
-            if (apartment) {
+            console.log("Dữ liệu căn hộ:", apartment);
+            if (apartment && Object.keys(apartment).length > 0) {
                 // Thiết kế Thẻ Kết Quả (Card) đầy đủ thông số như ảnh scan
                 resultContainer.innerHTML = `
                     <div class="bg-gradient-to-br from-blue-600 to-blue-700 text-white p-5 rounded-2xl shadow-lg border border-blue-500">
@@ -172,7 +177,7 @@
                 // Trả về thông báo không tìm thấy định dạng Mobile thân thiện
                 resultContainer.innerHTML = `
                     <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center text-sm font-medium">
-                        ❌ Không tìm thấy mã căn hộ <span class="font-mono font-bold">${query}</span> trong hệ thống. Vui lòng kiểm tra lại!
+                        ❌ Không tìm thấy mã căn hộ <span class="font-mono font-bold">[${query}]</span> hoặc chưa được cập nhật. Vui lòng kiểm tra lại!
                     </div>
                 `;
             }
