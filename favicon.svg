@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <!-- Nền xanh bo góc, trùng màu chủ đạo blue-600 của app -->
+    <rect width="64" height="64" rx="14" fill="#2563eb"/>
+    <!-- Ngôi nhà trắng có cửa ra vào -->
+    <path d="M20 46 V26 L32 17 L44 26 V46 H36 V36 H28 V46 Z" fill="#ffffff"/>
+</svg>

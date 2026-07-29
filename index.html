@@ -2,276 +2,229 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tra Cứu Căn Hộ NOXH</title>
-    <!-- Sử dụng Tailwind CSS để tối ưu giao diện mượt mà -->
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
-    <style>
-        /* Hiệu ứng xoay cho icon loading */
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 3px solid #fff;
-            width: 20px;
-            height: 20px;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOXH Đà Nẵng - Tra cứu căn hộ & Tính khoản vay</title>
+    <meta name="description" content="Công cụ miễn phí tra cứu căn hộ nhà ở xã hội (NOXH) Đà Nẵng: tìm mã căn hộ dự án NOXH 2 (E2) EcoHome Hòa Hiệp, tính giá căn hộ theo hệ số Ki kèm 2% phí bảo trì và ước tính khoản vay ưu đãi với lịch trả nợ theo tháng.">
+    <link rel="canonical" href="https://tracuunoxh.vercel.app/">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="theme-color" content="#2563eb">
+
+    <!-- Open Graph: hiển thị đẹp khi chia sẻ qua Zalo / Facebook / Messenger -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="NOXH Đà Nẵng">
+    <meta property="og:title" content="NOXH Đà Nẵng - Tra cứu căn hộ & Tính khoản vay">
+    <meta property="og:description" content="Tra cứu mã căn hộ NOXH EcoHome Hòa Hiệp, tính giá căn hộ theo hệ số Ki và ước tính khoản vay ưu đãi nhà ở xã hội.">
+    <meta property="og:url" content="https://tracuunoxh.vercel.app/">
+    <meta property="og:image" content="https://tracuunoxh.vercel.app/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="vi_VN">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NOXH Đà Nẵng - Tra cứu căn hộ & Tính khoản vay">
+    <meta name="twitter:description" content="Tra cứu mã căn hộ NOXH EcoHome Hòa Hiệp, tính giá căn hộ theo hệ số Ki và ước tính khoản vay ưu đãi nhà ở xã hội.">
+    <meta name="twitter:image" content="https://tracuunoxh.vercel.app/og-image.png">
+
+    <!-- Structured data cho Google -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "NOXH Đà Nẵng",
+        "url": "https://tracuunoxh.vercel.app/",
+        "description": "Công cụ tra cứu căn hộ nhà ở xã hội Đà Nẵng, tính giá căn hộ và ước tính khoản vay ưu đãi.",
+        "applicationCategory": "UtilityApplication",
+        "operatingSystem": "Web",
+        "inLanguage": "vi",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "VND" }
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="css/app.css">
 </head>
 <body class="bg-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- Nội dung chính -->
-    <div class="w-full max-w-md mx-auto p-4 pt-8">
-        
-        <!-- Tiêu đề tiêu chuẩn Mobile -->
-        <div class="text-center mb-6">
-            <h1 class="text-xl font-extrabold text-blue-600 tracking-tight uppercase">Tra Cứu Căn Hộ</h1>
-            <p class="text-xs text-gray-500 mt-1">Hỗ trợ tra cứu NOXH 2 (E2) - EcoHome Hòa Hiệp</p>
-            <p class="text-xs text-red-500 mt-1">VUI LÒNG ĐỐI CHIẾU LẠI KẾT QUẢ VỚI VĂN BẢN GỐC</p>
-        </div>
+    <main class="w-full max-w-md mx-auto p-4 pt-8">
 
-        <!-- Form Nhập Mã Căn Hộ -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-5">
-            <div class="mb-4">
-                <label for="searchInput" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Nhập mã căn hộ</label>
-                <!-- Thuộc tính autocapitalize tự động viết hoa chữ cái đầu khi gõ điện thoại -->
-                <input type="text" id="searchInput" placeholder="Ví dụ: E2-A.0201" autocomplete="off" autocapitalize="characters"
-                       class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-mono font-bold text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all placeholder:font-sans placeholder:text-sm placeholder:font-normal">
+        <!-- Tiêu đề chung của ứng dụng (không gắn với dự án cụ thể) -->
+        <header class="text-center mb-5">
+            <h1 class="text-xl font-extrabold text-blue-600 tracking-tight uppercase">NOXH Đà Nẵng</h1>
+            <p class="text-xs text-gray-500 mt-1">Tra cứu căn hộ & công cụ hỗ trợ nhà ở xã hội</p>
+        </header>
+
+        <!-- Thanh Tab điều hướng tính năng (dễ dàng thêm tab mới sau này) -->
+        <nav aria-label="Tính năng" class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100 mb-5 flex gap-1.5">
+            <button class="tab-btn flex-1 py-2.5 rounded-xl text-sm font-bold" data-tab="search" onclick="switchTab('search')">
+                🔍 Tra cứu
+            </button>
+            <button class="tab-btn flex-1 py-2.5 rounded-xl text-sm font-bold" data-tab="price" onclick="switchTab('price')">
+                🧮 Tính giá
+            </button>
+            <button class="tab-btn flex-1 py-2.5 rounded-xl text-sm font-bold" data-tab="loan" onclick="switchTab('loan')">
+                💰 Tính vay
+            </button>
+        </nav>
+
+        <!-- ============ TAB 1: TRA CỨU CĂN HỘ ============ -->
+        <section class="tab-panel" data-tab="search">
+            <!-- Card tra cứu liền khối: header dự án + form nhập mã -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-5 overflow-hidden">
+
+                <!-- Header thông tin dự án (sau này có nhiều dự án sẽ thay bằng ô chọn dự án) -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-3.5 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl shrink-0">🏢</div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] uppercase tracking-widest text-blue-200 font-bold">Dự án</p>
+                        <p class="text-sm font-extrabold text-white truncate">NOXH 2 (E2) - EcoHome Hòa Hiệp</p>
+                    </div>
+                </div>
+
+                <!-- Form Nhập Mã Căn Hộ -->
+                <div class="p-5">
+                    <div class="mb-4">
+                        <label for="search-input" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Nhập mã căn hộ</label>
+                        <!-- Thuộc tính autocapitalize tự động viết hoa chữ cái đầu khi gõ điện thoại -->
+                        <input type="text" id="search-input" placeholder="Ví dụ: E2-A.0201" autocomplete="off" autocapitalize="characters"
+                               class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-mono font-bold text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all placeholder:font-sans placeholder:text-sm placeholder:font-normal">
+                    </div>
+
+                    <!-- Nút bấm to, dễ chạm trên Mobile -->
+                    <button id="search-btn" onclick="handleSearch()"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 active:scale-[0.98]">
+                        <span id="btn-text">Tra cứu ngay</span>
+                        <div id="btn-spinner" class="spinner hidden"></div>
+                    </button>
+                </div>
             </div>
 
-            <!-- Nút bấm to, dễ chạm trên Mobile -->
-            <button id="searchBtn" onclick="handleSearch()"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 active:scale-[0.98]">
-                <span id="btnText">Tra cứu ngay</span>
-                <div id="btnSpinner" class="spinner hidden"></div>
-            </button>
-        </div>
+            <!-- Vùng hiển thị Kết quả / Thông báo -->
+            <div id="result-container" class="hidden transition-all duration-300">
+                <!-- Dữ liệu căn hộ sẽ được JS bơm vào đây -->
+            </div>
+        </section>
 
-        <!-- Vùng hiển thị Kết quả / Thông báo -->
-        <div id="resultContainer" class="hidden transition-all duration-300">
-            <!-- Dữ liệu căn hộ sẽ được JS bơm vào đây -->
-        </div>
+        <!-- ============ TAB 2: TÍNH GIÁ CĂN HỘ ============ -->
+        <section class="tab-panel hidden" data-tab="price">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-5">
 
-    </div>
+                <!-- Giá bán trên m² -->
+                <div class="mb-4">
+                    <label for="price-per-m2" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Giá bán (đ/m², gồm VAT)</label>
+                    <input type="text" id="price-per-m2" placeholder="Ví dụ: 16.000.000" inputmode="numeric" autocomplete="off"
+                           class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-mono font-bold text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all placeholder:font-sans placeholder:text-sm placeholder:font-normal">
+                </div>
 
-    <!-- Bản quyền / Footer chân trang -->
-    <div class="text-center py-4 text-[10px] text-gray-400 font-medium">
-        &copy; Phát triển bởi HN - 2026
-    </div>
-    <!-- <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
-        <span class="text-xs text-blue-100">Giá cho thuê (gồm VAT):</span>
-        <span class="font-bold text-green-200 text-sm">${formatMoney(apartment.gia_thue)} đ/m²/tháng</span>
-    </div> -->
+                <!-- Hệ số Ki & Diện tích: 2 cột gọn trên Mobile -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label for="price-ki" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Hệ số Ki</label>
+                        <input type="number" id="price-ki" value="1.00" min="0.1" max="3" step="0.01" inputmode="decimal"
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all">
+                    </div>
+                    <div>
+                        <label for="price-area" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Diện tích (m²)</label>
+                        <input type="number" id="price-area" placeholder="Ví dụ: 60.5" min="1" max="500" step="0.01" inputmode="decimal"
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all">
+                    </div>
+                </div>
+
+                <!-- Nút tính toán -->
+                <button id="price-btn" onclick="handlePriceCalc()"
+                        class="w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md shadow-violet-200 flex items-center justify-center gap-2 active:scale-[0.98]">
+                    <span id="price-btn-text">Tính giá căn hộ</span>
+                    <div id="price-btn-spinner" class="spinner hidden"></div>
+                </button>
+            </div>
+
+            <!-- Vùng hiển thị Kết quả tính giá -->
+            <div id="price-result" class="hidden transition-all duration-300">
+                <!-- Kết quả tính giá sẽ được JS bơm vào đây -->
+            </div>
+        </section>
+
+        <!-- ============ TAB 3: TÍNH KHOẢN VAY ============ -->
+        <section class="tab-panel hidden" data-tab="loan">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-5">
+
+                <!-- Giá trị căn hộ -->
+                <div class="mb-4">
+                    <label for="loan-price" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Giá trị căn hộ (đ)</label>
+                    <input type="text" id="loan-price" placeholder="Ví dụ: 1.200.000.000" inputmode="numeric" autocomplete="off"
+                           class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-mono font-bold text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all placeholder:font-sans placeholder:text-sm placeholder:font-normal">
+                    <p class="text-[11px] text-gray-400 mt-1.5">💡 Mẹo: Tra cứu căn hộ trước rồi bấm "Tính khoản vay cho căn này" để tự điền giá.</p>
+                </div>
+
+                <!-- Tỷ lệ vay -->
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="loan-ratio" class="text-xs font-bold text-gray-500 uppercase tracking-wide">Tỷ lệ vay</label>
+                        <span id="loan-ratio-label" class="text-sm font-extrabold text-emerald-600">80%</span>
+                    </div>
+                    <input type="range" id="loan-ratio" min="10" max="100" step="5" value="80">
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-[11px] text-gray-400">Số tiền vay:</span>
+                        <span id="loan-amount-label" class="text-sm font-bold text-gray-700">0 đ</span>
+                    </div>
+                </div>
+
+                <!-- Lãi suất & Thời hạn: 2 cột gọn trên Mobile -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label for="loan-rate" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Lãi suất (%/năm)</label>
+                        <input type="number" id="loan-rate" value="5.4" min="0.1" max="30" step="0.1" inputmode="decimal"
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
+                    </div>
+                    <div>
+                        <label for="loan-years" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Thời hạn (năm)</label>
+                        <input type="number" id="loan-years" value="25" min="1" max="25" step="1" inputmode="numeric"
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
+                    </div>
+                </div>
+
+                <!-- Phương thức trả nợ -->
+                <div class="mb-4">
+                    <label for="loan-method" class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wide">Phương thức trả nợ</label>
+                    <select id="loan-method"
+                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
+                        <option value="declining" selected>Dư nợ giảm dần (phổ biến)</option>
+                        <option value="annuity">Trả đều hàng tháng (gốc + lãi cố định)</option>
+                    </select>
+                </div>
+
+                <!-- Nút tính toán -->
+                <button id="loan-btn" onclick="handleLoanCalc()"
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md shadow-emerald-200 flex items-center justify-center gap-2 active:scale-[0.98]">
+                    <span id="loan-btn-text">Tính khoản vay</span>
+                    <div id="loan-btn-spinner" class="spinner hidden"></div>
+                </button>
+            </div>
+
+            <!-- Vùng hiển thị Kết quả tính vay -->
+            <div id="loan-result" class="hidden transition-all duration-300">
+                <!-- Kết quả tính vay sẽ được JS bơm vào đây -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Chân trang: lời mời ủng hộ + bản quyền -->
+    <footer class="text-center py-4 px-4 text-[10px] text-gray-400 font-medium">
+        <p class="text-[11px] text-gray-500">
+            ☕ Dự án cộng đồng miễn phí — nếu thấy hữu ích, ủng hộ mình 1 cốc cà phê nhé:
+            <br>
+            <span class="font-mono font-bold text-gray-600">MBBank · 0960146968888</span>
+            <button onclick="copyDonateAccount()" class="text-blue-500 hover:text-blue-600 font-bold">📄</button>
+        </p>
+        <details class="mt-1">
+            <summary class="text-[10px] text-gray-400 cursor-pointer select-none">Hoặc quét mã QR chuyển khoản</summary>
+            <img src="https://img.vietqr.io/image/MB-0960146968888-compact.png" alt="Mã QR ủng hộ qua MBBank" loading="lazy"
+                 class="mx-auto mt-2 w-40 rounded-xl border border-gray-200 bg-white">
+        </details>
+        <p class="mt-2">&copy; Phát triển bởi HN - 2026</p>
+    </footer>
 
     <!-- Xử lý Logic Javascript -->
-    <script>
-
-        // Hỗ trợ người dùng bấm nút Enter trên bàn phím điện thoại để tìm luôn
-        const inputEl = document.getElementById('searchInput');
-        let isBackspace = false;
-        inputEl.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleSearch();
-            }
-        });
-
-        // 1. Kiểm tra xem người dùng có bấm nút xóa (Backspace) không
-        inputEl.addEventListener('keydown', (e) => {
-            isBackspace = (e.key === 'Backspace');
-        });
-
-        inputEl.addEventListener('input', (e) => {
-            let cursorPosition = e.target.selectionStart;
-            let originalLength = e.target.value.length;
-
-            // Gọi hàm xử lý với trạng thái nút xóa
-            let formatted = formatInstantCode(e.target.value, isBackspace);
-
-            e.target.value = formatted;
-
-            // Giữ vị trí con trỏ chuột chính xác
-            let delta = formatted.length - originalLength;
-            e.target.setSelectionRange(cursorPosition + delta, cursorPosition + delta);
-        });
-
-        function formatMoney(amount) {
-            // check is number
-            if (isNaN(amount)) {
-                return "N/A";
-            }
-            return amount.toLocaleString('vi-VN');
-        }
-
-        function getImageUrl(kyHieuCanHo) {
-            const donNguyen = kyHieuCanHo.substring(kyHieuCanHo.length - 1); // Lấy ký tự cuối cùng của ký hiệu căn hộ
-            // Tạo URL hình ảnh dựa trên ký hiệu căn hộ
-            return `images/${donNguyen}.jpg`;
-        }
-
-        function formatInstantCode(value) {
-            // Loại bỏ các ký tự đặc biệt để lấy chuỗi thô
-            let clean = value.replace(/[-.]/g, '');
-            let formatted = '';
-
-            // Cú pháp gõ: E2-D.0302
-            if (clean.length > 0) {
-                formatted += clean.substring(0, 2);
-            }
-            
-            // Nếu gõ đủ 2 ký tự (E2) và KHÔNG phải đang nhấn xóa -> thêm luôn dấu "-"
-            if (clean.length === 2 && !isBackspace) {
-                formatted += '-';
-            } else if (clean.length > 2) {
-                formatted += '-' + clean.substring(2, 3);
-            }
-
-            // Nếu gõ đủ 3 ký tự thô (E2D) và KHÔNG phải đang nhấn xóa -> thêm luôn dấu "."
-            if (clean.length === 3 && !isBackspace) {
-                formatted += '.';
-            } else if (clean.length > 3) {
-                formatted += '.' + clean.substring(3, 12);
-            }
-
-            return formatted;
-        }
-
-        async function handleSearch() {
-            const input = document.getElementById('searchInput');
-            const btn = document.getElementById('searchBtn');
-            const btnText = document.getElementById('btnText');
-            const btnSpinner = document.getElementById('btnSpinner');
-            const resultContainer = document.getElementById('resultContainer');
-
-            // Định dạng chuỗi nhập vào: Viết hoa, xóa khoảng trắng thừa [1]
-            const query = input.value.trim().toUpperCase();
-
-            if (!query) {
-                alert("Vui lòng nhập mã căn hộ cần tìm!");
-                return;
-            }
-
-            // ── KHÓA NÚT & HIỂN THỊ LOADING (Tránh click spam nhiều lần) ──
-            btn.disabled = true;
-            btn.classList.add('opacity-75', 'cursor-not-allowed');
-            btnText.innerText = "Đang tra cứu...";
-            btnSpinner.classList.remove('hidden');
-            
-            // Ẩn vùng kết quả cũ khi đang tìm kiếm
-            resultContainer.classList.add('hidden');
-
-
-            // fetch dữ liệu
-            const result = await fetch(`https://script.google.com/macros/s/AKfycbx03jqDpeLsq6-6C-bUxa4tsq_sRTp1nZvrVb6CqiEunHn0kopxMWyZd9v8RBoGERrPmQ/exec?ma_can_ho=${query}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Nếu dữ liệu từ API trả về thành công, sử dụng dữ liệu đó
-                    if (data) {
-                        return data;
-                    } else {
-                        // Nếu không có dữ liệu từ API, fallback về dữ liệu Dummy
-                        return {};
-                    }
-                })
-                .catch(error => {
-                    console.error("Lỗi khi fetch dữ liệu:", error);
-                    // Nếu có lỗi fetch, fallback về dữ liệu Dummy
-                    return {};
-                });
-            
-            const apartment = result.data || {};
-            console.log("Dữ liệu căn hộ:", apartment);
-            if (apartment && Object.keys(apartment).length > 0) {
-                // Thiết kế Thẻ Kết Quả (Card) đầy đủ thông số như ảnh scan
-                resultContainer.innerHTML = `
-                    <div class="bg-gradient-to-br from-blue-600 to-blue-700 text-white p-5 rounded-2xl shadow-lg border border-blue-500">
-                        <div class="flex justify-between items-center border-b border-white/20 pb-3 mb-4">
-                            <div>
-                                <p class="text-[10px] uppercase font-bold tracking-widest text-blue-200">Mã Căn Hộ</p>
-                                <h2 class="text-2xl font-black font-mono mt-0.5">${apartment.ma_can_ho}</h2>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs font-bold bg-white/20 px-2.5 py-1 rounded-full">Tòa ${apartment.toa}</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Lưới thông số kỹ thuật tối ưu 2 cột trên Mobile -->
-                        <div class="grid grid-cols-2 gap-y-3.5 gap-x-2 text-sm">
-                            <div>
-                                <p class="text-[11px] text-blue-200 font-medium">Tầng / Số Căn</p>
-                                <p class="font-bold text-base">Tầng ${apartment.tang} — Căn ${apartment.so_can}</p>
-                            </div>
-                            <div>
-                                <p class="text-[11px] text-blue-200 font-medium">Đơn Nguyên / Ký Hiệu</p>
-                                <p class="font-bold text-base">ĐN ${apartment.don_nguyen} — ${apartment.ky_hieu_can_ho}</p>
-                            </div>
-                            <div class="col-span-2 border-t border-white/10 my-0.5"></div>
-                            <div>
-                                <p class="text-[11px] text-blue-200 font-medium">Diện Tích Căn Hộ</p>
-                                <p class="font-bold text-base">${apartment.dien_tich_can_ho} m²</p>
-                            </div>
-                            <div>
-                                <p class="text-[11px] text-blue-200 font-medium">Hệ Số Điều Chỉnh (Ki)</p>
-                                <p class="font-bold text-base">${apartment.he_so_ki}</p>
-                            </div>
-                            <div>
-                                <p class="text-[11px] text-blue-200 font-medium">Số thứ tự</p>
-                                <p class="font-bold text-base">${apartment.stt}</p>
-                            </div>
-                            <div class="col-span-2 border-t border-white/10 my-0.5"></div>
-                            <div class="col-span-2 bg-white/10 p-3 rounded-xl space-y-1.5 mt-1">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-xs text-blue-100">Giá bán (gồm VAT):</span>
-                                    <span class="font-extrabold text-yellow-300 text-base">${formatMoney(apartment.gia_ban_ki)} đ/m²</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-xs text-blue-100">Giá căn hộ dự kiến (chưa bao gồm 2% phí bảo trì):</span>
-                                </div>
-                                <div class="flex justify-end items-center">
-                                    <span class="font-extrabold text-orange-400 text-base">${formatMoney(apartment.gia_ban_ki * apartment.dien_tich_can_ho)} đ</span>    
-                                </div>
-                                <hr>
-                                <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
-                                    <span class="text-xs text-blue-100">Vị trí căn hộ:</span>
-                                </div>
-                                <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
-                                    <img src="${getImageUrl(apartment.ky_hieu_can_ho)}" class="inline-block" alt="Vị trí">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="">
-                            <span class="text-xs text-red-200">
-                                ⚠️ Thông tin tham khảo: Dữ liệu này được trích xuất từ văn bản gốc phía dưới, thời điểm trích xuất thông tin có thể chưa phải là mới nhất, anh/chị chỉ sử dụng nhằm mục đích tham khảo.
-                                Anh/chị vui lòng đối chiếu trên văn bản gốc được chủ đầu tư công bố.
-                            </span>
-                        </div>
-                        <div>
-                            <a href="https://drive.google.com/file/d/1NQzxgDTYGVBDcxJ9yi5KkKbUboD7x2uv/view" target="_blank" class="text-xs text-blue-200 hover:text-blue-100">📄 Xem chi tiết văn bản gốc tại đây</a>
-                        </div>
-                    </div>
-                `;
-            } else {
-                // Trả về thông báo không tìm thấy định dạng Mobile thân thiện
-                resultContainer.innerHTML = `
-                    <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center text-sm font-medium">
-                        ❌ Không tìm thấy mã căn hộ <span class="font-mono font-bold">[${query}]</span> hoặc chưa được cập nhật. Vui lòng kiểm tra lại!
-                    </div>
-                `;
-            }
-
-            // ── MỞ KHÓA LẠI NÚT BẤM SAU KHI HOÀN THÀNH TRA CỨU ──
-            btn.disabled = false;
-            btn.classList.remove('opacity-75', 'cursor-not-allowed');
-            btnText.innerText = "Tra cứu ngay";
-            btnSpinner.classList.add('hidden');
-            
-            // Hiển thị mượt mà vùng kết quả
-            resultContainer.classList.remove('hidden');
-        }
-    </script>
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,160 @@
+/* ===== Hiệu ứng xoay cho icon loading ===== */
+.spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 3px solid #fff;
+    width: 20px;
+    height: 20px;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===== Hiệu ứng hiện mượt vùng kết quả ===== */
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Toast thông báo (tối ưu Mobile) ===== */
+#toast-container {
+    position: fixed;
+    top: calc(12px + env(safe-area-inset-top, 0px)); /* Né tai thỏ / thanh trạng thái điện thoại */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: calc(100% - 32px);
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none; /* Không chặn thao tác vùng phía sau */
+}
+
+.toast {
+    pointer-events: auto; /* Riêng toast vẫn chạm được để tắt */
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    animation: toastIn 0.25s ease-out;
+}
+
+.toast.toast-hide {
+    animation: toastOut 0.25s ease-in forwards;
+}
+
+.toast-error   { background-color: #dc2626; } /* red-600 */
+.toast-warning { background-color: #d97706; } /* amber-600 */
+.toast-success { background-color: #059669; } /* emerald-600 */
+.toast-info    { background-color: #2563eb; } /* blue-600 */
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(-16px) scale(0.97); }
+}
+
+/* ===== Tab điều hướng ===== */
+.tab-btn {
+    transition: all 0.2s ease;
+}
+
+.tab-btn.tab-active {
+    background-color: #2563eb; /* blue-600 */
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.tab-btn:not(.tab-active) {
+    background-color: transparent;
+    color: #6b7280; /* gray-500 */
+}
+
+/* ===== Thanh trượt tỷ lệ vay ===== */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 9999px;
+    background: #e5e7eb;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #2563eb;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #2563eb;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+/* ===== Bảng lịch trả nợ ===== */
+.schedule-table th,
+.schedule-table td {
+    padding: 6px 8px;
+    white-space: nowrap;
+}
+
+/* Dòng tổng kết cuối mỗi năm dương lịch */
+.schedule-table tbody tr.year-total-row {
+    background-color: rgba(255, 255, 255, 0.18);
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Giữ dòng tiêu đề cố định khi cuộn bảng lịch trả nợ theo tháng */
+#schedule-container .schedule-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #0f766e; /* teal-700, trùng nền card kết quả */
+}
+
+.schedule-table tbody tr:nth-child(odd):not(.year-total-row) {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Ẩn mũi tên tăng giảm của input number cho gọn trên mobile */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
