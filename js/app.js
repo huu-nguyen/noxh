@@ -62,6 +62,11 @@ function formatMoney(amount) {
     return Math.round(amount).toLocaleString('vi-VN');
 }
 
+// Làm tròn 2 chữ số thập phân (áp dụng cho TỪNG bước tính để tránh sai số cộng dồn)
+function round2(value) {
+    return Math.round((value + Number.EPSILON) * 100) / 100;
+}
+
 // Sao chép số tài khoản ủng hộ vào clipboard (có fallback cho trình duyệt cũ)
 const DONATE_ACCOUNT = '0960146968888';
 
@@ -128,7 +133,59 @@ function attachMoneyFormatter(inputEl, onChange) {
 }
 
 /* ============================================================
- *  3. TRA CỨU CĂN HỘ
+ *  3. DANH SÁCH DỰ ÁN
+ * ============================================================ */
+// URL API trả về danh sách dự án (Google Sheet Apps Script).
+// Khi nào có API thì điền URL vào đây, format JSON mong đợi:
+// { "data": [{ "id": "...", "name": "...", "api_url": "..." }] }
+const PROJECTS_API_URL = '';
+
+// Danh sách mặc định khi chưa cấu hình API (hoặc API lỗi)
+const DEFAULT_PROJECTS = [
+    { id: 'ecohome-hoa-hiep', name: 'NOXH - EcoHome Hòa Hiệp', api_url: API_URL },
+];
+
+const projectSelectEl = document.getElementById('project-select');
+const projectSpinnerEl = document.getElementById('project-spinner');
+
+let allProjects = DEFAULT_PROJECTS;
+let currentProject = DEFAULT_PROJECTS[0];
+
+async function loadProjects() {
+    let projects = DEFAULT_PROJECTS;
+
+    if (PROJECTS_API_URL) {
+        try {
+            const result = await fetch(PROJECTS_API_URL).then(res => res.json());
+            if (result && Array.isArray(result.data) && result.data.length > 0) {
+                projects = result.data;
+            }
+        } catch (error) {
+            console.error('Lỗi khi tải danh sách dự án:', error);
+            showToast('Không tải được danh sách dự án, dùng danh sách mặc định!', 'warning');
+        }
+    } else {
+        // Chưa có API: giả lập thời gian tải ngắn để giữ hiệu ứng loading mượt
+        await new Promise(resolve => setTimeout(resolve, 800));
+    }
+
+    allProjects = projects;
+    currentProject = projects[0];
+
+    projectSelectEl.innerHTML = projects
+        .map(p => `<option value="${p.id}">${p.name}</option>`)
+        .join('');
+    projectSelectEl.disabled = false;
+    projectSpinnerEl.classList.add('hidden');
+}
+
+// Đổi dự án đang tra cứu
+projectSelectEl.addEventListener('change', () => {
+    currentProject = allProjects.find(p => p.id === projectSelectEl.value) || allProjects[0];
+});
+
+/* ============================================================
+ *  4. TRA CỨU CĂN HỘ
  * ============================================================ */
 const searchInputEl = document.getElementById('search-input');
 let isBackspace = false;
@@ -185,17 +242,9 @@ function formatInstantCode(value) {
     return formatted;
 }
 
-function getImageUrl(apartment) {
-    
-    if (!apartment || !apartment.ky_hieu_can_ho) {
-        return ""
-    }
-
-    if (apartment.toa.replaceAll(" ", "").toLowerCase() === "noxh1") {
-        return ""
-    }
-    
-    const donNguyen = apartment.ky_hieu_can_ho.substring(apartment.ky_hieu_can_ho.length - 1);
+function getImageUrl(kyHieuCanHo) {
+    // Lấy ký tự cuối cùng của ký hiệu căn hộ làm tên đơn nguyên
+    const donNguyen = kyHieuCanHo.substring(kyHieuCanHo.length - 1);
     return `images/${donNguyen}.jpg`;
 }
 
@@ -223,8 +272,8 @@ async function handleSearch() {
     // Ẩn vùng kết quả cũ khi đang tìm kiếm
     resultContainer.classList.add('hidden');
 
-    // Fetch dữ liệu từ API
-    const result = await fetch(`${API_URL}?ma_can_ho=${query}`)
+    // Fetch dữ liệu từ API của dự án đang chọn
+    const result = await fetch(`${currentProject.api_url}?ma_can_ho=${query}`)
         .then(response => response.json())
         .catch(error => {
             console.error('Lỗi khi fetch dữ liệu:', error);
@@ -273,12 +322,6 @@ async function handleSearch() {
                         <p class="text-[11px] text-blue-200 font-medium">Số thứ tự</p>
                         <p class="font-bold text-base">${apartment.stt}</p>
                     </div>
-                    <div class="flex items-center justify-end">
-                        <button onclick="prefillPrice(${apartment.gia_ban_ki / (apartment.he_so_ki || 1)}, ${apartment.he_so_ki}, ${apartment.dien_tich_can_ho})"
-                                class="text-xs font-bold bg-white/15 hover:bg-white/25 border border-white/30 px-3 py-2 rounded-lg transition-all active:scale-[0.98]">
-                            🧮 Tính giá theo đợt
-                        </button>
-                    </div>
                     <div class="col-span-2 border-t border-white/10 my-0.5"></div>
                     <div class="col-span-2 bg-white/10 p-3 rounded-xl space-y-1.5 mt-1">
                         <div class="flex justify-between items-center">
@@ -296,16 +339,10 @@ async function handleSearch() {
                             <span class="text-xs text-blue-100">Vị trí căn hộ:</span>
                         </div>
                         <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
-                            <img src="${getImageUrl(apartment)}" class="inline-block rounded-lg" alt="Vị trí">
+                            <img src="${getImageUrl(apartment.ky_hieu_can_ho)}" class="inline-block rounded-lg" alt="Vị trí">
                         </div>
                     </div>
                 </div>
-
-                <!-- Nút chuyển nhanh sang tab tính khoản vay với giá căn này -->
-                <button onclick="prefillLoan(${giaCanHo || 0})"
-                        class="w-full mt-4 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
-                    💰 Tính khoản vay cho căn này
-                </button>
 
                 <div class="mt-3">
                     <span class="text-xs text-red-200">
@@ -339,32 +376,20 @@ async function handleSearch() {
 }
 
 /* ============================================================
- *  4. TÍNH GIÁ CĂN HỘ
+ *  5. TÍNH GIÁ CĂN HỘ
  * ============================================================ */
 const pricePerM2El = document.getElementById('price-per-m2');
 const priceKiEl = document.getElementById('price-ki');
 const priceAreaEl = document.getElementById('price-area');
 const priceResultEl = document.getElementById('price-result');
 
-// Các mức đóng theo đợt (%) tính trên tổng tiền gồm phí bảo trì
-const PAYMENT_LEVELS = [5, 10, 15, 20, 25, 50];
-const MAINTENANCE_RATE = 0.02; // Phí bảo trì 2%
+// Các mức đóng theo đợt (%) tính trên tổng tiền căn hộ (gồm VAT, KHÔNG gồm phí bảo trì)
+const PAYMENT_LEVELS = [5, 10, 15, 20, 25, 50, 75];
+const MAINTENANCE_RATE = 0.02; // Phí bảo trì 2% (tính trên giá chưa gồm VAT)
+const VAT_RATE = 0.05;         // Giá nhập vào là giá ĐÃ gồm 5% VAT
 
 // Định dạng tiền khi gõ vào ô giá bán trên m²
 attachMoneyFormatter(pricePerM2El);
-
-// Được gọi từ nút "Tính giá theo đợt" trên thẻ kết quả tra cứu:
-// điền sẵn giá/m² gốc (giá bán ÷ Ki), hệ số Ki, diện tích rồi tính luôn
-function prefillPrice(basePricePerM2, ki, area) {
-    switchTab('price');
-    if (basePricePerM2 > 0 && ki > 0 && area > 0) {
-        pricePerM2El.value = Math.round(basePricePerM2).toLocaleString('vi-VN');
-        priceKiEl.value = ki;
-        priceAreaEl.value = area;
-        handlePriceCalc();
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
 
 function handlePriceCalc() {
     const pricePerM2 = parseMoneyInput(pricePerM2El.value);
@@ -393,16 +418,20 @@ function handlePriceCalc() {
 }
 
 // Tính toán và hiển thị kết quả giá căn hộ
+// Giá nhập vào (đ/m²) là giá ĐÃ gồm 5% VAT; mọi bước tính đều làm tròn 2 chữ số thập phân
 function renderPriceResult(pricePerM2, ki, area) {
-    const pricePerM2Ki = pricePerM2 * ki;              // Đơn giá sau hệ số Ki
-    const totalPrice = pricePerM2Ki * area;             // Tổng tiền căn hộ
-    const maintenanceFee = totalPrice * MAINTENANCE_RATE; // Phí bảo trì 2%
-    const grandTotal = totalPrice + maintenanceFee;     // Tổng gồm bảo trì
+    const pricePerM2Ki = round2(pricePerM2 * ki);                  // Đơn giá sau hệ số Ki (gồm VAT)
+    const totalWithVAT = round2(pricePerM2Ki * area);              // Tổng tiền căn hộ (gồm 5% VAT)
+    const totalExVAT = round2(totalWithVAT / (1 + VAT_RATE));      // Tổng tiền chưa gồm VAT
+    const vatAmount = round2(totalWithVAT - totalExVAT);           // Tiền thuế 5% VAT
+    const maintenanceFee = round2(totalExVAT * MAINTENANCE_RATE);  // Phí bảo trì 2% trên giá chưa VAT
+    const grandTotal = round2(totalWithVAT + maintenanceFee);      // Tổng thanh toán (gồm VAT + bảo trì)
 
+    // Các đợt đóng tính trên tổng tiền căn hộ gồm VAT, KHÔNG gồm phí bảo trì
     const levelRows = PAYMENT_LEVELS.map(p => `
         <tr>
             <td class="text-center font-bold">${p}%</td>
-            <td class="text-right font-bold">${formatMoney(grandTotal * p / 100)}</td>
+            <td class="text-right font-bold">${formatMoney(round2(totalWithVAT * p / 100))}</td>
         </tr>
     `).join('');
 
@@ -415,21 +444,29 @@ function renderPriceResult(pricePerM2, ki, area) {
 
             <div class="grid grid-cols-2 gap-y-3.5 gap-x-2 text-sm">
                 <div>
-                    <p class="text-[11px] text-violet-200 font-medium">Đơn giá sau hệ số Ki</p>
+                    <p class="text-[11px] text-violet-200 font-medium">Đơn giá sau hệ số Ki (gồm VAT)</p>
                     <p class="font-bold text-base">${formatMoney(pricePerM2Ki)} đ/m²</p>
                 </div>
                 <div>
-                    <p class="text-[11px] text-violet-200 font-medium">Phí bảo trì (2%)</p>
+                    <p class="text-[11px] text-violet-200 font-medium">Phí bảo trì (2% giá chưa VAT)</p>
                     <p class="font-bold text-base">${formatMoney(maintenanceFee)} đ</p>
                 </div>
 
                 <div class="col-span-2 bg-white/10 p-3 rounded-xl space-y-1.5 mt-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-xs text-violet-100">Tổng tiền căn hộ:</span>
-                        <span class="font-extrabold text-yellow-300 text-base">${formatMoney(totalPrice)} đ</span>
+                        <span class="text-xs text-violet-100">Tổng tiền (chưa gồm 5% VAT):</span>
+                        <span class="font-bold text-sm">${formatMoney(totalExVAT)} đ</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-violet-100">Tiền thuế VAT (5%):</span>
+                        <span class="font-bold text-sm">${formatMoney(vatAmount)} đ</span>
                     </div>
                     <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
-                        <span class="text-xs text-violet-100">Tổng + 2% phí bảo trì:</span>
+                        <span class="text-xs text-violet-100">Tổng tiền căn hộ (đã gồm 5% VAT):</span>
+                        <span class="font-extrabold text-yellow-300 text-base">${formatMoney(totalWithVAT)} đ</span>
+                    </div>
+                    <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
+                        <span class="text-xs text-violet-100">Tổng thanh toán (gồm VAT + 2% bảo trì):</span>
                         <span class="font-extrabold text-orange-300 text-base">${formatMoney(grandTotal)} đ</span>
                     </div>
                 </div>
@@ -437,7 +474,7 @@ function renderPriceResult(pricePerM2, ki, area) {
 
             <!-- Bảng các mức đóng theo đợt -->
             <div class="mt-4">
-                <p class="text-xs font-bold text-violet-100 mb-2">📋 Số tiền từng đợt đóng (tính trên tổng gồm bảo trì)</p>
+                <p class="text-xs font-bold text-violet-100 mb-2">📋 Số tiền từng đợt đóng (trên tổng gồm VAT, chưa gồm 2% phí bảo trì)</p>
                 <table class="schedule-table w-full text-xs">
                     <thead>
                         <tr class="border-b border-white/20 text-violet-200">
@@ -448,12 +485,6 @@ function renderPriceResult(pricePerM2, ki, area) {
                     <tbody>${levelRows}</tbody>
                 </table>
             </div>
-
-            <!-- Chuyển nhanh sang tab tính khoản vay -->
-            <button onclick="prefillLoan(${totalPrice})"
-                    class="w-full mt-4 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
-                💰 Tính khoản vay với giá này
-            </button>
 
             <div class="mt-3">
                 <span class="text-xs text-violet-100/80">
@@ -468,18 +499,16 @@ function renderPriceResult(pricePerM2, ki, area) {
 }
 
 /* ============================================================
- *  5. TÍNH KHOẢN VAY
+ *  6. TÍNH KHOẢN VAY
  * ============================================================ */
-const loanPriceEl = document.getElementById('loan-price');
-const loanRatioEl = document.getElementById('loan-ratio');
-const loanRatioLabelEl = document.getElementById('loan-ratio-label');
-const loanAmountLabelEl = document.getElementById('loan-amount-label');
+const loanAmountEl = document.getElementById('loan-amount');
 const loanRateEl = document.getElementById('loan-rate');
 const loanYearsEl = document.getElementById('loan-years');
 const loanMethodEl = document.getElementById('loan-method');
 const loanResultEl = document.getElementById('loan-result');
 
 let loanSchedule = [];          // Lịch trả nợ theo từng tháng của lần tính gần nhất
+let lastLoanSummary = null;     // Thông tin khoản vay của lần tính gần nhất (phục vụ xuất Excel)
 
 // Kỳ trả nợ thứ i (i = 0 là kỳ đầu tiên) — bắt đầu từ tháng liền sau tháng hiện tại
 function getPaymentMonth(i) {
@@ -491,40 +520,18 @@ function formatMonth(date) {
     return `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
 }
 
-// Định dạng tiền khi gõ vào ô giá trị căn hộ
-attachMoneyFormatter(loanPriceEl, updateLoanAmountLabel);
-
-// Cập nhật nhãn % và số tiền vay khi kéo thanh trượt
-loanRatioEl.addEventListener('input', () => updateLoanAmountLabel());
-
-function updateLoanAmountLabel() {
-    const price = parseMoneyInput(loanPriceEl.value);
-    const ratio = Number(loanRatioEl.value);
-    loanRatioLabelEl.innerText = `${ratio}%`;
-    loanAmountLabelEl.innerText = `${formatMoney(price * ratio / 100)} đ`;
-}
-
-// Được gọi từ nút "Tính khoản vay cho căn này" trên thẻ kết quả tra cứu
-function prefillLoan(price) {
-    switchTab('loan');
-    if (price > 0) {
-        loanPriceEl.value = Math.round(price).toLocaleString('vi-VN');
-        updateLoanAmountLabel();
-        handleLoanCalc();
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+// Định dạng tiền khi gõ vào ô số tiền vay
+attachMoneyFormatter(loanAmountEl);
 
 function handleLoanCalc() {
-    const price = parseMoneyInput(loanPriceEl.value);
-    const ratio = Number(loanRatioEl.value);
+    const loanAmount = parseMoneyInput(loanAmountEl.value);
     const annualRate = Number(loanRateEl.value);
     const years = Number(loanYearsEl.value);
     const method = loanMethodEl.value;
 
-    if (!price) {
-        showToast('Vui lòng nhập giá trị căn hộ!');
-        loanPriceEl.focus();
+    if (!loanAmount) {
+        showToast('Vui lòng nhập số tiền vay!');
+        loanAmountEl.focus();
         return;
     }
     if (!annualRate || annualRate <= 0) {
@@ -540,13 +547,11 @@ function handleLoanCalc() {
 
     // Ẩn kết quả cũ, quay spinner ~2s rồi mới tính và hiển thị
     loanResultEl.classList.add('hidden');
-    runCalcWithSpinner('loan-btn', 'Đang tính...', () => renderLoanResult(price, ratio, annualRate, years, method));
+    runCalcWithSpinner('loan-btn', 'Đang tính...', () => renderLoanResult(loanAmount, annualRate, years, method));
 }
 
 // Tính toán và hiển thị kết quả khoản vay
-function renderLoanResult(price, ratio, annualRate, years, method) {
-    const loanAmount = price * ratio / 100;      // Số tiền vay
-    const ownCapital = price - loanAmount;       // Vốn tự có
+function renderLoanResult(loanAmount, annualRate, years, method) {
     const months = years * 12;
     const monthlyRate = annualRate / 12 / 100;
 
@@ -579,6 +584,12 @@ function renderLoanResult(price, ratio, annualRate, years, method) {
         ? 'Dư nợ giảm dần (trả giảm dần theo tháng)'
         : 'Trả đều hàng tháng (gốc + lãi cố định)';
 
+    // Lưu thông tin lần tính này để xuất Excel
+    lastLoanSummary = {
+        loanAmount, annualRate, years, months,
+        methodLabel, firstPayment, lastPayment, totalInterest,
+    };
+
     loanResultEl.innerHTML = `
         <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-5 rounded-2xl shadow-lg border border-emerald-500">
             <div class="border-b border-white/20 pb-3 mb-4">
@@ -587,13 +598,9 @@ function renderLoanResult(price, ratio, annualRate, years, method) {
             </div>
 
             <div class="grid grid-cols-2 gap-y-3.5 gap-x-2 text-sm">
-                <div>
-                    <p class="text-[11px] text-emerald-200 font-medium">Số tiền vay (${ratio}%)</p>
+                <div class="col-span-2">
+                    <p class="text-[11px] text-emerald-200 font-medium">Số tiền vay</p>
                     <p class="font-bold text-base">${formatMoney(loanAmount)} đ</p>
-                </div>
-                <div>
-                    <p class="text-[11px] text-emerald-200 font-medium">Vốn tự có (${100 - ratio}%)</p>
-                    <p class="font-bold text-base">${formatMoney(ownCapital)} đ</p>
                 </div>
                 <div>
                     <p class="text-[11px] text-emerald-200 font-medium">Lãi suất</p>
@@ -631,6 +638,13 @@ function renderLoanResult(price, ratio, annualRate, years, method) {
                     <!-- Bảng lịch trả nợ sẽ được JS bơm vào đây -->
                 </div>
             </details>
+
+            <!-- Xuất lịch trả nợ ra file Excel -->
+            <button id="export-btn" onclick="handleExportLoanExcel()"
+                    class="w-full mt-4 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+                <span id="export-btn-text">📥 Tải lịch trả nợ (Excel)</span>
+                <div id="export-btn-spinner" class="spinner hidden"></div>
+            </button>
 
             <div class="mt-3">
                 <span class="text-xs text-emerald-100/80">
@@ -702,8 +716,103 @@ function renderLoanSchedule() {
     `;
 }
 
+// Kiểm tra điều kiện rồi xuất Excel kèm hiệu ứng loading trên nút
+function handleExportLoanExcel() {
+    if (!loanSchedule.length || !lastLoanSummary) {
+        showToast('Chưa có kết quả tính vay để xuất!', 'warning');
+        return;
+    }
+    if (typeof XLSX === 'undefined') {
+        showToast('Thư viện Excel chưa tải xong, vui lòng thử lại sau!', 'warning');
+        return;
+    }
+    runCalcWithSpinner('export-btn', 'Đang tạo file...', exportLoanExcel);
+}
+
+// Rút gọn số tiền cho tên file: 600tr, 750tr, 1ty, 1ty2 (1 tỷ 2), 1ty250 (1 tỷ 250 triệu)...
+function formatAmountShort(amount) {
+    const millions = Math.round(amount / 1e6);
+    if (millions < 1000) {
+        return `${millions}tr`;
+    }
+    const ty = Math.floor(millions / 1000);
+    const remainder = millions % 1000;
+    if (remainder === 0) {
+        return `${ty}ty`;
+    }
+    // Chẵn trăm triệu thì viết gọn kiểu dân dã: 1ty2, 1ty5; lẻ thì giữ nguyên: 1ty250
+    return remainder % 100 === 0 ? `${ty}ty${remainder / 100}` : `${ty}ty${remainder}`;
+}
+
+// Gắn định dạng tiền (dấu ngăn cách hàng nghìn) cho một ô Excel nếu là số
+function setMoneyFormat(ws, cellRef) {
+    if (ws[cellRef] && typeof ws[cellRef].v === 'number') {
+        ws[cellRef].z = '#,##0';
+    }
+}
+
+// Xuất lịch trả nợ ra file Excel (2 sheet: Tổng quan + Lịch trả nợ theo tháng)
+function exportLoanExcel() {
+    const s = lastLoanSummary;
+    const wb = XLSX.utils.book_new();
+
+    // ── Sheet 1: Tổng quan khoản vay ──
+    const summaryRows = [
+        ['THÔNG TIN KHOẢN VAY', ''],
+        ['Số tiền vay (đ)', Math.round(s.loanAmount)],
+        ['Lãi suất (%/năm)', s.annualRate],
+        ['Thời hạn', `${s.years} năm (${s.months} tháng)`],
+        ['Phương thức trả nợ', s.methodLabel],
+        ['Kỳ trả đầu tiên', loanSchedule[0].label],
+        ['Trả tháng đầu (đ)', Math.round(s.firstPayment)],
+        ['Trả tháng cuối (đ)', Math.round(s.lastPayment)],
+        ['Tổng tiền lãi (đ)', Math.round(s.totalInterest)],
+        ['Tổng gốc + lãi (đ)', Math.round(s.loanAmount + s.totalInterest)],
+    ];
+    const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+    wsSummary['!cols'] = [{ wch: 26 }, { wch: 30 }];
+    // Định dạng tiền cho các dòng có nhãn "(đ)"
+    summaryRows.forEach((row, i) => {
+        if (String(row[0]).includes('(đ)')) {
+            setMoneyFormat(wsSummary, `B${i + 1}`);
+        }
+    });
+    XLSX.utils.book_append_sheet(wb, wsSummary, 'Tổng quan');
+
+    // ── Sheet 2: Lịch trả nợ theo tháng + dòng tổng mỗi năm ──
+    const rows = [['Kỳ', 'Tháng', 'Gốc (đ)', 'Lãi (đ)', 'Tổng (đ)']];
+    let yearPrincipal = 0;
+    let yearInterest = 0;
+
+    loanSchedule.forEach((r, i) => {
+        yearPrincipal += r.principal;
+        yearInterest += r.interest;
+        rows.push([i + 1, r.label, Math.round(r.principal), Math.round(r.interest), Math.round(r.principal + r.interest)]);
+
+        const year = r.label.slice(3);
+        const next = loanSchedule[i + 1];
+        if (!next || next.label.slice(3) !== year) {
+            rows.push(['', `Tổng năm ${year}`, Math.round(yearPrincipal), Math.round(yearInterest), Math.round(yearPrincipal + yearInterest)]);
+            yearPrincipal = 0;
+            yearInterest = 0;
+        }
+    });
+    rows.push(['', 'TỔNG CỘNG', Math.round(s.loanAmount), Math.round(s.totalInterest), Math.round(s.loanAmount + s.totalInterest)]);
+
+    const wsSchedule = XLSX.utils.aoa_to_sheet(rows);
+    wsSchedule['!cols'] = [{ wch: 6 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 16 }];
+    // Định dạng tiền cho 3 cột Gốc / Lãi / Tổng (bỏ qua dòng tiêu đề)
+    for (let r = 2; r <= rows.length; r++) {
+        ['C', 'D', 'E'].forEach(col => setMoneyFormat(wsSchedule, `${col}${r}`));
+    }
+    XLSX.utils.book_append_sheet(wb, wsSchedule, 'Lịch trả nợ');
+
+    XLSX.writeFile(wb, `lich-tra-no-${formatAmountShort(s.loanAmount)}-${s.years}nam.xlsx`);
+    showToast('Đã xuất file Excel lịch trả nợ!', 'success');
+}
+
 /* ============================================================
  *  KHỞI TẠO
  * ============================================================ */
-updateLoanAmountLabel();
 switchTab('search');
+loadProjects();

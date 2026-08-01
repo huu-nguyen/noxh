@@ -89,37 +89,28 @@
     color: #6b7280; /* gray-500 */
 }
 
-/* ===== Thanh trượt tỷ lệ vay ===== */
-input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
+/* ===== Ô chọn dự án trên nền xanh header ===== */
+.project-select {
     width: 100%;
-    height: 6px;
-    border-radius: 9999px;
-    background: #e5e7eb;
+    background-color: transparent;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    border: none;
     outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #2563eb;
-    border: 3px solid #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    padding: 2px 0;
     cursor: pointer;
 }
 
-input[type="range"]::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #2563eb;
-    border: 3px solid #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
+.project-select:disabled {
+    cursor: wait;
+    opacity: 0.8;
+}
+
+/* Danh sách xổ xuống nền trắng nên chữ phải màu tối */
+.project-select option {
+    color: #1f2937;
+    font-weight: 600;
 }
 
 /* ===== Bảng lịch trả nợ ===== */
