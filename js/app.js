@@ -242,8 +242,14 @@ function formatInstantCode(value) {
     return formatted;
 }
 
-function getImageUrl(kyHieuCanHo) {
+function getImageUrl(apartment) {
     // Lấy ký tự cuối cùng của ký hiệu căn hộ làm tên đơn nguyên
+    if (!apartment || !apartment.ky_hieu_can_ho) return '';
+
+    // Kiểm tra nếu là NOXH 1
+    if (apartment.toa === 'NOXH 1') {
+        return '';
+    }
     const donNguyen = kyHieuCanHo.substring(kyHieuCanHo.length - 1);
     return `images/${donNguyen}.jpg`;
 }
@@ -339,7 +345,7 @@ async function handleSearch() {
                             <span class="text-xs text-blue-100">Vị trí căn hộ:</span>
                         </div>
                         <div class="flex justify-between items-center border-t border-white/10 pt-1.5">
-                            <img src="${getImageUrl(apartment.ky_hieu_can_ho)}" class="inline-block rounded-lg" alt="Vị trí">
+                            <img src="${getImageUrl(apartment)}" class="inline-block rounded-lg" alt="Vị trí">
                         </div>
                     </div>
                 </div>
