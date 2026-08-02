@@ -250,7 +250,7 @@ function getImageUrl(apartment) {
     if (apartment.toa === 'NOXH 1') {
         return '';
     }
-    const donNguyen = kyHieuCanHo.substring(kyHieuCanHo.length - 1);
+    const donNguyen = apartment.ky_hieu_can_ho.substring(apartment.ky_hieu_can_ho.length - 1);
     return `images/${donNguyen}.jpg`;
 }
 
@@ -279,7 +279,7 @@ async function handleSearch() {
     resultContainer.classList.add('hidden');
 
     // Fetch dữ liệu từ API của dự án đang chọn
-    const result = await fetch(`${currentProject.api_url}?ma_can_ho=${query}`)
+    const result = await fetch(`${currentProject.api_url}?w20olp8u=p2sfo2af&iugj7r87=p08&kj9t9ka2=${query}`)
         .then(response => response.json())
         .catch(error => {
             console.error('Lỗi khi fetch dữ liệu:', error);
