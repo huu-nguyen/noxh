@@ -34,7 +34,7 @@ function showToast(message, type = 'error', duration = 2800) {
         container.removeChild(container.firstChild);
     }
 
-    const icons = { error: '⚠️', warning: '⚠️', success: '✅', info: 'ℹ️' };
+    const icons = { error: '❌', warning: '⚠️', success: '✅', info: 'ℹ️' };
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
@@ -138,17 +138,17 @@ function attachMoneyFormatter(inputEl, onChange) {
 // URL API trả về danh sách dự án (Google Sheet Apps Script).
 // Khi nào có API thì điền URL vào đây, format JSON mong đợi:
 // { "data": [{ "id": "...", "name": "...", "api_url": "..." }] }
-const PROJECTS_API_URL = '';
+const PROJECTS_API_URL = 'https://script.google.com/macros/s/AKfycbx03jqDpeLsq6-6C-bUxa4tsq_sRTp1nZvrVb6CqiEunHn0kopxMWyZd9v8RBoGERrPmQ/exec?w20olp8u=ti0kli87';
 
 // Danh sách mặc định khi chưa cấu hình API (hoặc API lỗi)
 const DEFAULT_PROJECTS = [
-    { id: 'ecohome-hoa-hiep', name: 'NOXH - EcoHome Hòa Hiệp', api_url: API_URL },
+    { id: 'all', name: '-- Chọn dự án NOXH --', apiUrl: '' },
 ];
 
 const projectSelectEl = document.getElementById('project-select');
 const projectSpinnerEl = document.getElementById('project-spinner');
 
-let allProjects = DEFAULT_PROJECTS;
+let allProjects = [];
 let currentProject = DEFAULT_PROJECTS[0];
 
 async function loadProjects() {
@@ -173,15 +173,32 @@ async function loadProjects() {
     currentProject = projects[0];
 
     projectSelectEl.innerHTML = projects
-        .map(p => `<option value="${p.id}">${p.name}</option>`)
+        .map(p => `<option value="${p.pConvert}">${p.name}</option>`)
         .join('');
     projectSelectEl.disabled = false;
     projectSpinnerEl.classList.add('hidden');
 }
 
+async function loadShopeeLinks() {
+    let links = [];
+
+    if (API_URL) {
+        try {
+            const result = await fetch(`${API_URL}?w20olp8u=m876gtr4`).then(res => res.json());
+            if (result && Array.isArray(result.data) && result.data.length > 0) {
+                links = result.data;
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy links', error);
+        }
+    }
+
+    console.log("Links Shopee:", links)
+}
+
 // Đổi dự án đang tra cứu
 projectSelectEl.addEventListener('change', () => {
-    currentProject = allProjects.find(p => p.id === projectSelectEl.value) || allProjects[0];
+    currentProject = allProjects.find(p => p.pConvert === projectSelectEl.value) || allProjects[0];
 });
 
 /* ============================================================
@@ -263,6 +280,12 @@ async function handleSearch() {
     // Định dạng chuỗi nhập vào: Viết hoa, xóa khoảng trắng thừa
     const query = searchInputEl.value.trim().toUpperCase();
 
+    console.log("currentProject: ", currentProject)
+    if (currentProject.apiUrl === "updating") {
+        showToast("Dự án này đang được cập nhật thông tin!", "info", 4000);
+        return;
+    }
+
     if (!query) {
         showToast('Vui lòng nhập mã căn hộ cần tìm!');
         searchInputEl.focus();
@@ -279,7 +302,7 @@ async function handleSearch() {
     resultContainer.classList.add('hidden');
 
     // Fetch dữ liệu từ API của dự án đang chọn
-    const result = await fetch(`${currentProject.api_url}?w20olp8u=p2sfo2af&iugj7r87=p08&kj9t9ka2=${query}`)
+    const result = await fetch(`${currentProject.apiUrl}?w20olp8u=p2sfo2af&iugj7r87=${currentProject.pConvert}&kj9t9ka2=${query}`)
         .then(response => response.json())
         .catch(error => {
             console.error('Lỗi khi fetch dữ liệu:', error);
@@ -822,3 +845,4 @@ function exportLoanExcel() {
  * ============================================================ */
 switchTab('search');
 loadProjects();
+loadShopeeLinks();
