@@ -2,7 +2,7 @@
  *  NOXH App - Tra cứu căn hộ & Tính khoản vay
  * ============================================================ */
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbx03jqDpeLsq6-6C-bUxa4tsq_sRTp1nZvrVb6CqiEunHn0kopxMWyZd9v8RBoGERrPmQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyB-FncIfhk-hfgCQ_6VlHPEsS68PPko9DFSzfjiQRExp8T73g1ZJ58nhmxRkvOwMWeXA/exec';
 
 /* ============================================================
  *  1. ĐIỀU HƯỚNG TAB
@@ -135,11 +135,6 @@ function attachMoneyFormatter(inputEl, onChange) {
 /* ============================================================
  *  3. DANH SÁCH DỰ ÁN
  * ============================================================ */
-// URL API trả về danh sách dự án (Google Sheet Apps Script).
-// Khi nào có API thì điền URL vào đây, format JSON mong đợi:
-// { "data": [{ "id": "...", "name": "...", "api_url": "..." }] }
-const PROJECTS_API_URL = 'https://script.google.com/macros/s/AKfycbx03jqDpeLsq6-6C-bUxa4tsq_sRTp1nZvrVb6CqiEunHn0kopxMWyZd9v8RBoGERrPmQ/exec?w20olp8u=ti0kli87';
-
 // Danh sách mặc định khi chưa cấu hình API (hoặc API lỗi)
 const DEFAULT_PROJECTS = [
     { id: 'all', name: '-- Chọn dự án NOXH --', apiUrl: '' },
@@ -154,9 +149,9 @@ let currentProject = DEFAULT_PROJECTS[0];
 async function loadProjects() {
     let projects = DEFAULT_PROJECTS;
 
-    if (PROJECTS_API_URL) {
+    if (API_URL) {
         try {
-            const result = await fetch(PROJECTS_API_URL).then(res => res.json());
+            const result = await fetch(`${API_URL}?w20olp8u=ti0kli87`).then(res => res.json());
             if (result && Array.isArray(result.data) && result.data.length > 0) {
                 projects = result.data;
             }
